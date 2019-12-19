@@ -58,9 +58,9 @@ server.get("/login",(req,res)=>{
     if(result.length==0){
       res.send({code:-1,msg:"手机号或密码有误"})
     }else{
-      //  保存用户id在sess对象中
+      //  保存用户uid在sess对象中
       // result[{id:1}]
-        req.session.uid=result[0].id;
+        req.session.uid=result[0].uid;
         res.send({code:1,msg:"登录成功"})
     }
   //(6)将结果返回脚手架
@@ -70,14 +70,14 @@ server.get("/login",(req,res)=>{
 //9:功能一:完成用户注册
 server.post("/register",(req,res)=>{
   //(1)获取脚手架参数 uname upwd
-  var phone = req.body.phone;
+  var ep = req.body.phone;
   var upwd = req.body.upwd;
-  console.log(phone);
+  console.log(ep);
   console.log(upwd);
   //(2)创建sql语句查询
-  var sql = "SELECT uid FROM mfw_user WHERE phone = ?";
+  var sql = "SELECT id FROM mfw_user WHERE phone = ?";
   //(3)执行sql语句
-  pool.query(sql,[phone],(err,result)=>{
+  pool.query(sql,[ep],(err,result)=>{
     if(err)throw err;
     //(4)获取执行结果
     //(5)判断查询是否成功 result.length
@@ -85,7 +85,7 @@ server.post("/register",(req,res)=>{
       res.send({code:-1,msg:"您的手机号已被注册"})
     }else{
       var sql = "INSERT INTO mfw_user VALUES(null,?,md5(?))";
-      pool.query(sql,[phone,upwd],(err,result)=>{
+      pool.query(sql,[ep,upwd],(err,result)=>{
         if(err) throw err;
         if(result.affectedRows>0){
           res.send({code:1,msg:"注册成功"})
